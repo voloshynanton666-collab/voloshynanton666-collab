@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для моєї коханої ❤️</title>
+    <style>
+        /* Базові налаштування */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff0f5; color: #333; margin: 0; padding: 0;
+            text-align: center; overflow-x: hidden; scroll-behavior: smooth;
+        }
+
+        /* Супер-густі падаючі серця на фоні */
+        .heart {
+            position: fixed; top: -10vh; color: #ff4d6d; font-size: 1.5rem;
+            animation: fall linear infinite; z-index: 1000; pointer-events: none;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) scale(0.4) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            50% { transform: translateY(50vh) scale(1.3) rotate(180deg); opacity: 0.9; }
+            100% { transform: translateY(110vh) scale(0.7) rotate(360deg); opacity: 0; }
+        }
+
+        /* Конфетті-вибух сердечок */
+        .burst-heart {
+            position: fixed; pointer-events: none; z-index: 3000;
+            font-size: 1.8rem; user-select: none;
+            animation: burst 1.2s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+        }
+        @keyframes burst {
+            0% { transform: translate(0, 0) scale(0.3) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.5) rotate(var(--rot)); opacity: 0; }
+        }
+
+        /* Інтерактивна анімація появи та наведення для фото й відео */
+        .interactive-media {
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.35s ease;
+            cursor: pointer;
+            opacity: 0;
+            animation: mediaEntrance 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .interactive-media:hover {
+            transform: scale(1.06) translateY(-8px);
+            box-shadow: 0 20px 35px rgba(232, 67, 147, 0.45) !important;
+            border-color: #ff4d6d !important;
+        }
+        @keyframes mediaEntrance {
+            0% { opacity: 0; transform: translateY(35px) scale(0.9) rotate(-3deg); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+        }
+
+        /* Кнопка музики */
+        .music-btn {
+            position: fixed; bottom: 20px; right: 20px; z-index: 5000;
+            background-color: #e84393; color: white; border: none;
+            padding: 15px 25px; border-radius: 30px; font-size: 1.1rem;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(232, 67, 147, 0.4);
+            transition: all 0.3s; font-weight: bold;
+        }
+        .music-btn:hover { background-color: #d63031; transform: translateY(-3px); }
+
+        /* Головний екран */
+        .hero-section {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            padding: 150px 20px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1 { font-size: 4rem; margin: 0; text-shadow: 2px 2px 5px rgba(0,0,0,0.2); }
+        .hero-subtitle { font-size: 1.5rem; margin-top: 15px; font-style: italic; }
+
+        .section { padding: 80px 20px; max-width: 900px; margin: 0 auto; }
+        h2 { color: #e84393; font-size: 2.8rem; margin-bottom: 30px; }
+
+        /* Лічильник */
+        .counter-box {
+            margin: 30px auto; padding: 40px; background: white; border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(232, 67, 147, 0.15); font-size: 1.5rem; color: #e84393; font-weight: bold;
+        }
+        #days-counter { font-size: 5rem; display: block; margin: 10px 0; color: #ff4d6d; }
+
+        /* Таймлайн */
+        .timeline {
+            position: relative; max-width: 700px; margin: 40px auto; text-align: left;
+        }
+        .timeline::after {
+            content: ''; position: absolute; width: 4px; background-color: #ffb6c1;
+            top: 0; bottom: 0; left: 50%; margin-left: -2px;
+        }
+        .timeline-item {
+            padding: 20px 40px; position: relative; width: 50%; box-sizing: border-box;
+        }
+        .timeline-item:nth-child(odd) { left: 0; }
+        .timeline-item:nth-child(even) { left: 50%; }
+        .timeline-item::after {
+            content: '❤️'; position: absolute; width: 30px; height: 30px; right: -15px;
+            background-color: white; border: 4px solid #ffb6c1; top: 50%; margin-top: -15px; border-radius: 50%;
+            z-index: 1; font-size: 15px; display: flex; align-items: center; justify-content: center;
+        }
+        .timeline-item:nth-child(even)::after { left: -15px; }
+        
+        /* Стани карток */
+        .timeline-content {
+            background-color: white; border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer;
+            transition: all 0.3s; position: relative; overflow: hidden;
+            height: 250px; border: 3px solid transparent; display: flex; flex-direction: column;
+        }
+        .timeline-content.locked {
+            filter: grayscale(100%); opacity: 0.65; cursor: not-allowed;
+        }
+        .timeline-content:not(.locked):hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(232, 67, 147, 0.3); border-color: #ff4d6d; z-index: 2;
+        }
+        .timeline-img {
+            width: 100%; height: 100%; object-fit: cover; display: block; background-color: #ffe6ea;
+        }
+        .click-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: rgba(232, 67, 147, 0.8); color: white;
+            padding: 12px 0; text-align: center; font-weight: bold;
+            font-size: 1.2rem; backdrop-filter: blur(5px);
+        }
+        .timeline-content.locked .click-overlay {
+            background: rgba(100, 100, 100, 0.85); font-size: 0.95rem;
+        }
+
+        /* Інтерактивний генератор */
+        .generator-box {
+            background: linear-gradient(135deg, #fff 0%, #ffe6ea 100%);
+            padding: 50px 20px; border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(232, 67, 147, 0.1); margin: 40px 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .reason-text {
+            font-size: 1.8rem; color: #d63031; font-weight: bold;
+            min-height: 100px; margin: 20px 0; padding: 20px; font-style: italic;
+            display: flex; align-items: center; justify-content: center; width: 100%;
+        }
+        .counter-reasons {
+            font-size: 1.1rem; color: #e84393; margin-top: 15px; font-weight: bold;
+        }
+
+        /* Квіз секретного привітання */
+        .quiz-box {
+            background: linear-gradient(135deg, #fff 0%, #ffe6ea 100%);
+            padding: 40px 20px; border-radius: 30px;
+            box-shadow: 0 10px 30px rgba(232, 67, 147, 0.15); margin-top: 20px;
+            max-width: 600px; margin-left: auto; margin-right: auto; text-align: left;
+        }
+        .quiz-question {
+            margin-bottom: 20px; font-size: 1.1rem; color: #d63031; font-weight: bold;
+        }
+        .quiz-input {
+            width: 100%; padding: 12px 15px; font-size: 1rem; border-radius: 15px;
+            border: 2px solid #ffb6c1; outline: none; box-sizing: border-box; margin-top: 5px;
+            background: white; color: #333; transition: border-color 0.3s;
+        }
+        .quiz-input:focus { border-color: #e84393; }
+
+        /* Кнопки */
+        .btn {
+            background-color: #e84393; color: white; border: none;
+            padding: 15px 40px; font-size: 1.2rem; border-radius: 30px;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(232, 67, 147, 0.4); transition: all 0.3s;
+        }
+        .btn:hover { background-color: #d63031; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(214, 48, 49, 0.5); }
+        
+        /* Модальні вікна з ефектом появи */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #fff0f5; z-index: 2000; overflow-y: auto; padding-bottom: 50px;
+        }
+        .modal-overlay.active { display: block; animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes modalPop { 
+            from { opacity: 0; transform: scale(0.95) translateY(30px); } 
+            to { opacity: 1; transform: scale(1) translateY(0); } 
+        }
+
+        .close-btn {
+            position: sticky; top: 20px; left: 20px;
+            background-color: #e84393; color: white; padding: 10px 25px;
+            border: none; border-radius: 30px; font-size: 1.1rem; cursor: pointer;
+            z-index: 2010; box-shadow: 0 5px 15px rgba(232, 67, 147, 0.4); margin: 20px; transition: background 0.3s;
+        }
+        .close-btn:hover { background-color: #d63031; }
+
+        .modal-container { max-width: 900px; margin: 0 auto; padding: 20px; text-align: center; }
+        .modal-title { font-size: 3rem; color: #e84393; margin-bottom: 10px; }
+        
+        @media screen and (max-width: 600px) {
+            .timeline::after { left: 31px; }
+            .timeline-item { width: 100%; padding-left: 70px; padding-right: 20px; }
+            .timeline-item:nth-child(odd), .timeline-item:nth-child(even) { left: 0; }
+            .timeline-item::after, .timeline-item:nth-child(even)::after { left: 15px; }
+            .music-btn { padding: 10px 15px; font-size: 0.9rem; bottom: 10px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- АУДІО ФАЙЛИ -->
+    <audio id="bg-music" loop><source src="phara.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-click"><source src="mouse.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-pop"><source src="confetti-pop.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-magic"><source src="universfield-magic-spell-02-250240.mp3" type="audio/mpeg"></audio>
+
+    <button class="music-btn" id="music-toggle" onclick="toggleMusic()">🎵 Ввімкнути музику</button>
+
+    <!-- ГОЛОВНА СТОРІНКА -->
+    <div id="main-page">
+        <div class="hero-section">
+            <h1>ЙОУ ТИ ТЕРПИШ МЕНЕ ВЖЕ 2 РОКИ! ❤️</h1>
+            <p class="hero-subtitle">Ти — моя найгарніша пригода</p>
+        </div>
+
+        <div class="section">
+            <div class="counter-box">
+                Ми створюємо нашу історію вже: <br>
+                <span id="days-counter">0</span> 
+                <span style="font-size: 1.2rem; color: #888; font-weight: normal;">щасливих днів</span>
+            </div>
+        </div>
+
+        <!-- Таймлайн (Історія) -->
+        <div class="section" style="background-color: #fff9fa; border-radius: 40px;">
+            <h2>Наша історія</h2>
+            <p style="color: #666; font-size: 1.1rem; margin-bottom: 40px;">Відкривай спогади, натискаючи на генератор причин нижче! 👇</p>
+            
+            <div class="timeline">
+                
+                <div class="timeline-item">
+                    <div class="timeline-content locked" id="card-1" onclick="tryOpenPage('event1', 'Перші контакти', 10)">
+                        <img src="2.jpg" alt="Фото 1" class="timeline-img">
+                        <div class="click-overlay" id="overlay-1">🔒 Потрібно 10 причин</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content locked" id="card-2" onclick="tryOpenPage('event2', 'Вечір 15', 20)">
+                        <video class="timeline-img" autoplay muted loop playsinline><source src="3.mov" type="video/mp4"></video>
+                        <div class="click-overlay" id="overlay-2">🔒 Потрібно 20 причин</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content locked" id="card-3" onclick="tryOpenPage('event3', 'ПРИКОЛЬНІ', 30)">
+                        <video class="timeline-img" autoplay muted loop playsinline><source src="8.mp4" type="video/mp4"></video>
+                        <div class="click-overlay" id="overlay-3">🔒 Потрібно 30 причин</div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content locked" id="card-4" onclick="tryOpenPage('event4', 'Дві частини одного', 40)">
+                        <img src="15.jpg" alt="Фото 4" class="timeline-img">
+                        <div class="click-overlay" id="overlay-4">🔒 Потрібно 40 причин</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content locked" id="card-5" onclick="tryOpenPage('event5', 'Сьогодні', 50)">
+                        <img src="19.jpg" alt="Фото 5" class="timeline-img">
+                        <div class="click-overlay" id="overlay-5">🔒 Потрібно 50 причин</div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Інтерактивний генератор -->
+        <div class="section">
+            <h2>Чому я тебе кохаю?</h2>
+            <div class="generator-box">
+                <div class="reason-text" id="reason-display">Тисни кнопку нижче, щоб розблокувати спогади!</div>
+                <button class="btn" onclick="generateReason()">Ще одна причина 🪄</button>
+                <div class="counter-reasons" id="reasons-left-text">Натиснуто причин: 0 / 50</div>
+            </div>
+        </div>
+
+        <!-- Секретне привітання з Квізом -->
+        <div class="section" style="margin-bottom: 80px;">
+            <h2>У мене є ще дещо...</h2>
+            <p style="color: #666; margin-bottom: 20px;">Щоб відкрити секретне привітання, дай відповідь на 3 запитання про нас ❤️</p>
+            
+            <div class="quiz-box">
+                <div class="quiz-question">
+                    1. День, коли ми поцілувались? (наприклад: 15.09 або дата)
+                    <input type="text" id="ans1" class="quiz-input" placeholder="Введи відповідь...">
+                </div>
+                <div class="quiz-question">
+                    2. Наше особливе місце?
+                    <input type="text" id="ans1-fake" style="display:none">
+                    <input type="text" id="ans2" class="quiz-input" placeholder="Введи відповідь...">
+                </div>
+                <div class="quiz-question">
+                    3. Коли було зроблено наше перше фото?
+                    <input type="text" id="ans3" class="quiz-input" placeholder="Введи відповідь...">
+                </div>
+                <div style="text-align: center; margin-top: 25px;">
+                    <button class="btn" onclick="checkQuiz()">Розблокувати секрет 🔓</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ВІРТУАЛЬНІ СТОРІНКА ДЛЯ СПОГАДІВ -->
+    <div id="album-page" class="modal-overlay">
+        <button class="close-btn" onclick="closePage()">⬅ Повернутися до історії</button>
+        <div class="modal-container">
+            <h2 id="album-title" class="modal-title">Назва події</h2>
+            <div id="album-content"></div>
+        </div>
+    </div>
+
+    <!-- ВІРТУАЛЬНА СТОРІНКА ДЛЯ СЕКРЕТНОГО ВІДЕО З ПАПКИ -->
+    <div id="video-page" class="modal-overlay">
+        <button class="close-btn" onclick="closeVideo()">⬅ Повернутися</button>
+        <div class="modal-container" style="margin-top: 50px;">
+            <h2 class="modal-title">Для тебе ❤️</h2>
+            <!-- Локальне відео з папки -->
+            <video id="secret-video-player" controls style="width: 100%; max-width: 700px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <source src="Video Project 3.mp4" type="video/mp4">
+                Ваш браузер не підтримує відео.
+            </video>
+        </div>
+    </div>
+
+    <!-- КОНТЕНТ ПОДІЙ -->
+    <div style="display: none;">
+        <div id="content-event1">
+            <p style="font-size: 1.2rem;">Я не міг не згадати це (звук виключив).</p>
+            <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 30px; margin-top: 30px;">
+                <video class="interactive-media" autoplay muted loop playsinline style="width: 100%; max-width: 400px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); object-fit: cover; animation-delay: 0.1s;">
+                    <source src="video_1.mp4" type="video/mp4">
+                </video>
+                <img class="interactive-media" src="1.jpg" alt="Спогад 1" style="width: 100%; max-width: 400px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); object-fit: cover; animation-delay: 0.25s;">
+            </div>
+        </div>
+
+        <div id="content-event2">
+            <p style="font-size: 1.2rem;">Перші промені.</p>
+            <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px; margin-top: 30px;">
+                <img class="interactive-media" src="5.jpg" style="width: 100%; max-width: 250px; height: 250px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); object-fit: cover; animation-delay: 0.1s;">
+                <img class="interactive-media" src="4.jpg" style="width: 100%; max-width: 250px; height: 250px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); object-fit: cover; animation-delay: 0.2s;">
+                <img class="interactive-media" src="6.jpg" style="width: 100%; max-width: 250px; height: 250px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); object-fit: cover; animation-delay: 0.3s;">
+                <img class="interactive-media" src="7.jpg" style="width: 100%; max-width: 250px; height: 250px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); object-fit: cover; animation-delay: 0.4s;">
+            </div>
+        </div>
+
+        <div id="content-event3">
+            <p style="font-size: 1.5rem;">Пріколдеси)).</p>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 550px; margin: 30px auto;">
+                <video class="interactive-media" autoplay muted loop playsinline style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 5px 15px rgba(0,0,0,0.1); animation-delay: 0.1s;">
+                    <source src="9.mp4" type="video/mp4">
+                </video>
+                <video class="interactive-media" autoplay muted loop playsinline style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 5px 15px rgba(0,0,0,0.1); animation-delay: 0.2s;">
+                    <source src="11.mp4" type="video/mp4">
+                </video>
+                <video class="interactive-media" autoplay muted loop playsinline style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 5px 15px rgba(0,0,0,0.1); animation-delay: 0.3s;">
+                    <source src="12.mp4" type="video/mp4">
+                </video>
+                <video class="interactive-media" autoplay muted loop playsinline style="width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 5px 15px rgba(0,0,0,0.1); animation-delay: 0.4s;">
+                    <source src="10.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+
+        <div id="content-event4">
+            <p style="font-size: 1.2rem;">Одне ціле ❤️</p>
+            <div style="display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 20px; margin-top: 30px;">
+                <div style="text-align: center; max-width: 280px; width: 100%;">
+                    <h3 style="color: #e84393; font-style: italic; margin-bottom: 15px;">А ✨</h3>
+                    <img class="interactive-media" src="13.jpg" style="width: 100%; height: 350px; object-fit: cover; object-position: 100% 61%; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); animation-delay: 0.15s;">
+                </div>
+                <div style="text-align: center; max-width: 280px; width: 100%;">
+                    <h3 style="color: #e84393; font-style: italic; margin-bottom: 15px;">С ✨</h3>
+                    <img class="interactive-media" src="14.jpg" style="width: 100%; height: 350px; object-fit: cover; object-position: 0% 50%; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); animation-delay: 0.3s;">
+                </div>
+            </div>
+        </div>
+
+       <div id="content-event5">
+            <p style="font-size: 1.2rem;">Кохаю тебе безмежно! Наш сьогоднішній день ❤️</p>
+            <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px; margin-top: 30px;">
+                <img class="interactive-media" src="17.jpg" style="width: 100%; max-width: 220px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); animation-delay: 0.1s;">
+                <img class="interactive-media" src="16.jpg" style="width: 100%; max-width: 220px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); animation-delay: 0.25s;">
+                <img class="interactive-media" src="18.jpg" style="width: 100%; max-width: 220px; border-radius: 20px; border: 3px solid #ffb6c1; box-shadow: 0 10px 20px rgba(0,0,0,0.1); animation-delay: 0.4s;">
+            </div>
+        </div>
+    </div>
+
+
+    <!-- СКРИПТИ -->
+    <script>
+        const bgMusic = document.getElementById('bg-music');
+        const sfxClick = document.getElementById('sfx-click');
+        const sfxPop = document.getElementById('sfx-pop');
+        const sfxMagic = document.getElementById('sfx-magic');
+        let isMusicPlaying = false;
+        
+        const normalVolume = 0.15; 
+        const quietVolume = 0.02;  
+
+        bgMusic.volume = normalVolume; 
+        sfxMagic.volume = 0.4; 
+        sfxPop.volume = 0.3;   
+        sfxClick.volume = 0.2; 
+
+        // Автозапуск музики при першому кліку або вході
+        function startMusicOnInteraction() {
+            if (!isMusicPlaying) {
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    document.getElementById('music-toggle').innerText = '🔇 Вимкнути музику';
+                    window.removeEventListener('click', startMusicOnInteraction);
+                    window.removeEventListener('keydown', startMusicOnInteraction);
+                    window.removeEventListener('touchstart', startMusicOnInteraction);
+                }).catch(e => {
+                    console.log("Очікуємо взаємодії для запуску музики");
+                });
+            }
+        }
+
+        window.addEventListener('click', startMusicOnInteraction);
+        window.addEventListener('keydown', startMusicOnInteraction);
+        window.addEventListener('touchstart', startMusicOnInteraction);
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                document.getElementById('music-toggle').innerText = '🎵 Ввімкнути музику';
+                isMusicPlaying = false;
+            } else {
+                bgMusic.play().then(() => {
+                    document.getElementById('music-toggle').innerText = '🔇 Вимкнути музику';
+                    isMusicPlaying = true;
+                }).catch(e => console.log("Помилка відтворення"));
+            }
+        }
+
+        function playSound(audioElement) {
+            if (audioElement) {
+                audioElement.currentTime = 0; 
+                audioElement.play().catch(e => {});
+            }
+        }
+
+        // Лічильник днів
+        const diffDays = 728; 
+        let currentDay = 0;
+        const counterElement = document.getElementById("days-counter");
+        const timer = setInterval(() => {
+            if (currentDay >= diffDays) {
+                clearInterval(timer);
+                counterElement.innerText = diffDays;
+            } else {
+                currentDay += 10; 
+                if(currentDay > diffDays) currentDay = diffDays;
+                counterElement.innerText = currentDay;
+            }
+        }, 30);
+
+        // Супер-густі падаючі сердечка та зірочки
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            const hearts = ['❤️', '💖', '💕', '✨', '💘', '🌸', '💫', '⭐', '💗'];
+            heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2.5 + 2.5 + 's';
+            heart.style.fontSize = (Math.random() * 1.2 + 0.8) + 'rem';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+        setInterval(createHeart, 250); // Дуже густий спавн!
+
+        // Потужний салют-вибух
+        function triggerHeartBurst() {
+            const symbols = ['❤️', '💖', '✨', '💘', '💕', '🌸', '💫', '⭐', '💥', '💗'];
+            const startX = window.innerWidth / 2;
+            const startY = window.innerHeight / 2;
+
+            for (let i = 0; i < 40; i++) { // Більше конфетті
+                const burstEl = document.createElement('div');
+                burstEl.className = 'burst-heart';
+                burstEl.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                const angle = Math.random() * 2 * Math.PI;
+                const distance = Math.random() * 320 + 100;
+                const tx = Math.cos(angle) * distance + 'px';
+                const ty = Math.sin(angle) * distance + 'px';
+                const rot = (Math.random() * 1080 - 540) + 'deg';
+
+                burstEl.style.left = startX + 'px';
+                burstEl.style.top = startY + 'px';
+                burstEl.style.setProperty('--tx', tx);
+                burstEl.style.setProperty('--ty', ty);
+                burstEl.style.setProperty('--rot', rot);
+
+                document.body.appendChild(burstEl);
+                setTimeout(() => burstEl.remove(), 1200);
+            }
+        }
+
+        // --- ГЕНЕРАТОР ПРИЧИН ТА РОЗБЛОКУВАННЯ ПОДІЙ ---
+        let totalReasonClicks = 0;
+        const requiredClicksPerLevel = 10;
+
+        const allReasons = [
+            "За твою неймовірну посмішку.", "Тому що з тобою навіть звичайний вечір стає святом.",
+            "За твою підтримку в будь-яких ситуаціях.", "Тому що ти розумієш мене без слів.",
+            "За твій сміх — це моя улюблена пісня.", "За те, як ти пчхаєш.", "За те, як ти позіхаєш.",
+            "За твої кавунові духи.", "За твої зелені очі.", "За твої ріснічки.", "За твої емоції.",
+            "За те, що ти блондіночка.", "За те, як ти кумедно морщиш носик.", "За твої теплі обійми.",
+            "Тому що ти робиш мене найщасливішим хлопцем у світі.", "За твій затишний голос.",
+            "За те, як ми можемо просто мовчати разом.", "За твої ніжні ручки.",
+            "Тому що поруч із тобою я відчуваю себе вдома.", "За те, що ти віриш у мене.",
+            "Тому що кожен день з тобою — це пригода.", "За твої ранкові сонні очі.",
+            "За те, як ти щиро радієш дрібницям.", "Просто тому, що ти — це ти. Моя ідеальна дівчина."
+        ];
+
+        let availableReasons = [...allReasons];
+
+        function updateCounterText() {
+            const counterText = document.getElementById('reasons-left-text');
+            counterText.innerText = `Натиснуто причин: ${totalReasonClicks} / 50`;
+        }
+
+        function checkUnlocks() {
+            for (let i = 1; i <= 5; i++) {
+                let targetClicks = i * requiredClicksPerLevel; 
+                if (totalReasonClicks >= targetClicks) {
+                    let card = document.getElementById('card-' + i);
+                    let overlay = document.getElementById('overlay-' + i);
+                    if (card.classList.contains('locked')) {
+                        card.classList.remove('locked');
+                        overlay.innerText = "Тисни 👆 (Відкрито!)";
+                        triggerHeartBurst(); 
+                    }
+                }
+            }
+        }
+
+        function generateReason() {
+            playSound(sfxMagic); 
+            totalReasonClicks++;
+            updateCounterText();
+            checkUnlocks();
+
+            const display = document.getElementById('reason-display');
+            display.style.opacity = 0;
+            
+            setTimeout(() => {
+                if (availableReasons.length === 0) {
+                    availableReasons = [...allReasons];
+                }
+                const randomIndex = Math.floor(Math.random() * availableReasons.length);
+                const newReason = availableReasons[randomIndex];
+                availableReasons.splice(randomIndex, 1);
+
+                display.innerText = newReason;
+                display.style.transition = "opacity 0.4s";
+                display.style.opacity = 1;
+            }, 250);
+        }
+
+        function tryOpenPage(eventId, title, requiredClicks) {
+            if (totalReasonClicks < requiredClicks) {
+                playSound(sfxClick);
+                alert(`Ця подія ще заблокована! 🔒\nТобі потрібно натиснути кнопку генератора ще ${requiredClicks - totalReasonClicks} разів (всього потрібно ${requiredClicks}).`);
+                return;
+            }
+            openPage(eventId, title);
+        }
+
+        // --- ПЕРЕВІРКА КВІЗУ ДЛЯ СЕКРЕТНОГО ПРИВІТАННЯ ---
+        function checkQuiz() {
+            const possibleAnswers1 = ["15.09", "15 вересня", "15.09.2024"]; 
+            const possibleAnswers2 = ["магаз", "магазин", "біля магаза"];   
+            const possibleAnswers3 = ["2025", "22 серпня"];   
+
+            const userAns1 = document.getElementById('ans1').value.trim().toLowerCase();
+            const userAns2 = document.getElementById('ans2').value.trim().toLowerCase();
+            const userAns3 = document.getElementById('ans3').value.trim().toLowerCase();
+
+            const isAns1Correct = possibleAnswers1.some(ans => userAns1.includes(ans));
+            const isAns2Correct = possibleAnswers2.some(ans => userAns2.includes(ans));
+            const isAns3Correct = possibleAnswers3.some(ans => userAns3.includes(ans));
+
+            if (isAns1Correct && isAns2Correct && isAns3Correct) {
+                playSound(sfxPop);
+                triggerHeartBurst();
+                alert("Ура! Усі відповіді правильні! ❤️ Відкриваємо секретне привітання...");
+                openVideo();
+            } else {
+                playSound(sfxClick);
+                alert("Якась відповідь не зовсім правильна, спробуй ще раз! 😉 Подумай гарненько.");
+            }
+        }
+
+        // --- ВІДКРИТТЯ СТОРІНОК ---
+        function openPage(eventId, title) {
+            playSound(sfxPop); 
+            document.getElementById('album-title').innerText = title;
+            document.getElementById('album-content').innerHTML = document.getElementById('content-' + eventId).innerHTML;
+            document.getElementById('album-page').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            triggerHeartBurst(); 
+        }
+
+        function closePage() {
+            playSound(sfxClick); 
+            document.getElementById('album-page').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            setTimeout(() => { document.getElementById('album-content').innerHTML = ''; }, 400);
+        }
+
+        function openVideo() {
+            playSound(sfxPop); 
+            // Робимо фонову музику дуже тихою фон-музикою (приблизно 10-15%)
+            if (isMusicPlaying) {
+                bgMusic.volume = quietVolume;
+            }
+            document.getElementById('video-page').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            triggerHeartBurst(); 
+        }
+
+        function closeVideo() {
+            playSound(sfxClick); 
+            document.getElementById('video-page').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Зупиняємо відео з папки
+            const videoPlayer = document.getElementById('secret-video-player');
+            if(videoPlayer) {
+                videoPlayer.pause();
+                videoPlayer.currentTime = 0;
+            }
+
+            // Повертаємо звичайну гучність фонової музики
+            if (isMusicPlaying) {
+                bgMusic.volume = normalVolume;
+            }
+        }
+    </script>
+
+</body>
+</html>
